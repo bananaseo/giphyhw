@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Giphy Buttons</title>
+
+    <!--bootstrap Link-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+   <!--css stylesheet reference-->
+   <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+   <!--script-->
+   <script src="app.js"></script>
+
+   <div class="container">
+        <h1>Giphy Mood</h1>
+    
+        
+    
+        <form id="mood-form">
+          <label for="mood-input">How are you feeling?</label>
+          <input type="text" id="mood-input">
+    
+          <!-- Button triggers new movie to be added -->
+          <input id="add-mood" type="submit" value="Add a Mood">
+        </form> <br>
+    
+        <!-- Moods will get dumped here -->
+        <div id="moods-view"></div> 
+
+        <!--Gifs dumped here-->
+        <div id="gif-view"></div>
+
+
+        <!--For some strange reason buttons disappear when I put javascript in app.js-->
+        <script type="text/javascript">
+         
+          var moods = ["Excited", "Fabulous", "Furious"];
+    
+          
+          //Capture mood name from data-attribute
+          function displayMood () {
+                var mood= $(this).attr("data-name"); 
+                
+               var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                mood + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+                $.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function(response){
+                    
+                    
+
+                    // Storing the rating data
+                    
+                    var rating = response.data[0].rating;
+
+                    console.log(rating); 
+                    
+                    var pOne = $("<p>").text("Rating: " + rating);
+
+                    $("#gif-view").empty(); 
+                    $("#gif-view").prepend(pOne); 
+
+                    //Storing image data
+
+                    var imageUrl = response.data[0].images.original.url; 
+                    console.log(imageUrl); 
+                    var moodImage =  $("<img>"); 
+                    moodImage.attr("src", imageUrl); 
+                    moodImage.attr("alt", "mood image")
+                    $("#gif-view").prepend(moodImage); 
+
+
+
+                    
+
+
+                });
+
+
+              
+
+
+            }
+
+        //event listener for dynamically created element
+        $(document).on("click",".mood", displayMood)
+
+        // Function for displaying mood data
+        function renderButtons() {
+    
+            
+            $("#moods-view").empty();
+
+   
+            for (var i = 0; i < moods.length; i++) {
+
+                var a = $("<button>");
+                
+                a.addClass("mood");
+                
+                a.attr("data-name", moods[i]);
+                
+                a.text(moods[i]);
+                
+                $("#moods-view").append(a);
+            }
+        }
+
+  
+        $("#add-mood").on("click", function(event) {
+        
+            event.preventDefault();
+
+            // This line will grab the text from the input box
+            var mood = $("#mood-input").val().trim();
+
+            // The mood from the textbox is then added to our array
+            moods.push(mood);
+
+            // calling renderButtons which handles the processing of our mood array
+            renderButtons();
+        });
+
+        // Calling the renderButtons function at least once to display the initial list of moods
+        renderButtons();
+
+
+              
+
+         
+
+           
+
+
+
+        </script>
+      </div>
+
+    
+
+    
+    
+    
+</body>
+</html>
